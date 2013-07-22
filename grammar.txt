@@ -1,0 +1,91 @@
+
+function_define_list
+    : function_define+
+    ;
+
+function_define
+    : type TT_ID TT_LP type_name_comma_list? TT_RP block
+    ;
+
+type_name_comma_list
+    : type_name (TT_COMMA type_name)*
+    ;
+
+type_name
+    : type TT_ID
+    ;
+
+type 
+    : TT_TYPE_INT
+    | TT_TYPE_STRING
+    | TT_TYPE_VOID
+    ;
+
+block 
+    : TT_LBRACE statement_list? TT_RBRACE
+    ;
+
+statement_list
+    : statement+
+    ;
+
+statement
+    : TT_SEMICELON
+    | TT_CONTINUE TT_SEMICELON
+    | TT_BREAK TT_SEMICELON
+    | TT_RETURN TT_SEMICELON
+    | block
+    | TT_IF TT_LP expr TT_RP statement (TT_ELSE statement)?
+    | TT_WHILE TT_LP expr TT_RP statement
+    | TT_FOR TT_LP for_first_part expr? TT_SEMICELON expr? TT_RP statement
+    | local_define_list
+    | expr TT_SEMICELON
+    ;
+
+for_first_part
+    : local_define_list
+    | expr TT_SEMICELON
+    | TT_SEMICELON
+    ;
+
+local_define_list
+    : type id_or_assignment (TT_COMMA id_or_assignment)*
+    ;
+
+id_or_assignment
+    : TT_ID
+    | TT_ID TT_OP_ASSIGN expr
+    ;
+
+// operator precedence
+expr 
+    : TT_ID TT_OP_ASSIGN expr
+    | expr_nud (expr_led)*
+    ;
+
+expr_nud 
+    : TT_INT
+    | TT_STRING
+    | TT_ID
+    | TT_TRUE
+    | TT_FALSE
+    | expr_call
+    | TT_LP expr TT_RP
+    | TT_OP_NOT expr
+    | (TT_OP_INC | TT_OP_DEC) TT_ID
+    ;
+
+expr_led
+    : (TT_OP_AND | TT_OP_OR) expr
+    | (TT_OP_LESS | TT_OP_LESSEQ | TT_OP_GREATER | TT_OP_GREATEREQ | TT_OP_EQUAL | TT_OP_NEQUAL) expr
+    | (TT_OP_ADD | TT_OP_SUB) expr
+    | (TT_OP_MUL | TT_OP_DIV | TT_OP_MOD) expr
+    ;
+    
+expr_call
+    : TT_ID TT_LP expr_list? TT_RP
+    ;
+
+expr_list
+    : expr (TT_COMMA expr)*
+    ;
