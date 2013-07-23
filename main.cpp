@@ -100,15 +100,15 @@ static Token* getBuildinToken(const string &lexeme) {
 class Scanner { 
 public:
     explicit Scanner(const char *src): m_src(src) { }
-    Token LA(int n) { makesureN(n); return m_LAList[n - 1]; }
+    Token LA(int n) { fetchN(n); return m_LAList[n - 1]; }
     Token next(int n) {
-        makesureN(n);
+        fetchN(n);
         Token token = m_LAList[0];
         m_LAList.erase(m_LAList.begin(), m_LAList.begin() + n);
         return token;
     }
 private:
-    void makesureN(int n) {
+    void fetchN(int n) {
         while ((int)m_LAList.size() < n) {
             for (; isspace(*m_src); ++m_src);
 
